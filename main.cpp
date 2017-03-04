@@ -39,8 +39,7 @@ int main(int argc, char **argv) {
 
     path_key = (char*)calloc(MAX_INPUT, sizeof(char*));
     path_alph = (char*)calloc(MAX_INPUT, sizeof(char*));
-    path_text = (char*)calloc(MAX_INPUT, sizeof(char*));
-
+    path_text = (char*)calloc(MAX_INPUT, sizeof(char*));    
 
     if( menu(argc, argv) != 0 )
         return -FAILURE;
@@ -137,7 +136,7 @@ static int menu(int argc, char **argv){
     string help = "\tYou must to use:\n"
                   "-k\t- file which contains key phrase;\n"
                   "-a\t- file which contains alphabet for encryption;\n"
-                  "-t\t- file which contains plaintext (not encrypted);\n"
+                  "-t\t- file which contains plaintext (not encrypted);\n"                  
                   "-h\t- this help view;\n";
     if( ( argc != 7 ) ){
         if( !strcmp(argv[1], "-h") ){
@@ -165,7 +164,7 @@ static int menu(int argc, char **argv){
         case 't':
             cout << "\tYour plaintext file will be: ";
             strcpy(path_text, optarg);
-            cout << path_text << endl;
+            cout << path_text << endl;            
             break;
         case 'h':
             cout << help << endl;
@@ -208,10 +207,7 @@ static const QString get_keys(ifstream &file){
     }
 
     QString s_key_words(key_words);
-    if( !isSpace )
-        clear_space(s_key_words);       // Remove all whitespace and trans it to lowercase
-    else
-        clear_enters(s_key_words);      // Else remove only '\n'
+    clear_enters(s_key_words);      // Remove only '\n'
 
     free(key_words);
 
@@ -290,30 +286,10 @@ static const QString get_text(ifstream &file){
     }
 
     QString s_text(text);
-    if( !isSpace )
-        clear_space(s_text);
-    else
-        clear_enters(s_text);
+    clear_enters(s_text);
 
     free(text);
     return s_text;
-}
-
-/**
- * @brief clear_space - Clear string from whitespace and transform it to lowercase;
- * @param text        - String of text (key, alphabet, plain text);
- */
-static void clear_space(QString &text){
-    text = text.toLower();
-    int pos = 0;
-    while( text.contains(' ') || text.contains('\n') ) {
-        pos = text.indexOf(' ');
-        if( pos != -1 )
-            text.remove(pos, 1);
-        pos = text.indexOf('\n');
-        if( pos != -1 )
-            text.remove(pos, 1);
-    }
 }
 
 /**
@@ -350,17 +326,16 @@ static const QString get_encr_text(const QString colm_alph,
         if( iter_key == key.end() )
             iter_key = key.begin();
 
-
         incr_alph = colm_alph.indexOf(*iter_txt);
         if( incr_alph < 0 ){
-            cout << "Something wrong. Can't associate your alphabet and your clear text\r\n";
-            return NULL;
+            encr_text.append(*iter_txt);
+            iter_key--;
+            continue;
         }
 
         incr_key = colm_alph.indexOf(*iter_key);
-        if( incr_key < 0 ){
-            cout << "Something wrong. Can't associate your alphabet and your key phrase\r\n";
-            return NULL;
+        if( incr_key < 0 ){          
+            continue;
         }
 
         incr_text = incr_alph + incr_key;
